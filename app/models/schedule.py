@@ -12,7 +12,7 @@ class Schedule(Base):
     return_date = Column(Date, nullable=False)
     origin = Column(String, nullable=False)
     destination = Column(String, nullable=False)
-    km_final = Column(Integer)
+    km_initial = Column(Integer)
     km_final = Column(Integer)
     liters_fuel = Column(Float)
     fuel_cost = Column(Float)
