@@ -9,14 +9,20 @@ from pydantic import BaseModel
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 class LoginRequest(BaseModel):
-    email: str
+    username_or_email: str  # Aceita tanto email quanto nome de usuário
     password: str
 
 @router.post("/login")
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == payload.email).first()
+    # Buscar usuário por email OU por nome
+    user = db.query(User).filter(
+        (User.email == payload.username_or_email) | 
+        (User.name == payload.username_or_email)
+    ).first()
+    
     if not user or not verify_password(payload.password, user.password):
         raise HTTPException(status_code=401, detail="Credenciais inválidas")
+    
     token = create_access_token({"sub": str(user.id)})
     return {"access_token": token, "token_type": "bearer"}
 

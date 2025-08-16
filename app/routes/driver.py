@@ -39,4 +39,6 @@ def update_driver(driver_id: int, driver: DriverCreate, db: Session = Depends(ge
     db.commit()
     db.refresh(db_driver)
     return db_driver
+
+
 #TODO implementar a atualização e exclusão de motoristas, além de outras funcionalidades necessárias.
