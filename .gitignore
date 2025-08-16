@@ -42,6 +42,9 @@ MANIFEST
 # Logs
 *.log
 logs/
+# Logs do sistema
+logs/
+*.log.*
 
 # Arquivos temporários
 *.tmp

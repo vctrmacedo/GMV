@@ -5,23 +5,41 @@ from app.schemas.user import UserCreate, UserOut
 from app.database import get_db
 from app.core.dependencies import get_current_user
 from app.core.security import hash_password
+from app.core.logging import log_audit, logger
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
 @router.post("/", response_model=UserOut)
 def create_user(user: UserCreate, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
-    db_user = db.query(User).filter(User.email == user.email).first()
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email já cadastrado")
-    db_user = User(
-        name=user.name,
-        email=user.email,
-        password=hash_password(user.password)
-    )
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+    try:
+        db_user = db.query(User).filter(User.email == user.email).first()
+        if db_user:
+            logger.warning(f"Tentativa de criar usuário com email já existente: {user.email}")
+            raise HTTPException(status_code=400, detail="Email já cadastrado")
+        
+        db_user = User(
+            name=user.name,
+            email=user.email,
+            password=hash_password(user.password)
+        )
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        
+        # Log de auditoria
+        log_audit(
+            user_id=current_user.id,
+            action="CREATE",
+            resource="USER",
+            message=f"Usuário criado: {db_user.name} ({db_user.email})"
+        )
+        
+        logger.info(f"Usuário criado com sucesso: {db_user.name}")
+        return db_user
+        
+    except Exception as e:
+        logger.error(f"Erro ao criar usuário: {str(e)}")
+        raise
 
 @router.get("/", response_model=list[UserOut])
 def list_users(db: Session = Depends(get_db), current_user = Depends(get_current_user)):
