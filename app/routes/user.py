@@ -45,15 +45,49 @@ def create_user(user: UserCreate, db: Session = Depends(get_db), current_user = 
 def list_users(db: Session = Depends(get_db), current_user = Depends(get_current_user)):
     return db.query(User).all()
 
+# @router.put("/{user_id}", response_model=UserOut)
+# def update_user(user_id: int, user: UserCreate, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+#     db_user = db.query(User).filter(User.id == user_id).first()
+#     if not db_user:
+#         raise HTTPException(status_code=404, detail="Usuário não encontrado")
+#     for field, value in user.dict().items():
+#         setattr(db_user, field, value)
+#     db.commit()
+#     db.refresh(db_user)
+#     return db_user
+
 @router.put("/{user_id}", response_model=UserOut)
-def update_user(user_id: int, user: UserCreate, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+def update_user(
+    user_id: int,
+    user: UserCreate,  #TODO: Trocar por UserUpdate
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
     db_user = db.query(User).filter(User.id == user_id).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
-    for field, value in user.dict().items():
+
+    user_data = user.dict(exclude_unset=True)  # só pega os campos enviados
+
+    # Se a senha for enviada, aplica o hash
+    if "password" in user_data and user_data["password"]:
+        user_data["password"] = hash_password(user_data["password"])
+
+    for field, value in user_data.items():
         setattr(db_user, field, value)
+
     db.commit()
     db.refresh(db_user)
+
+    # Log de auditoria
+    log_audit(
+        user_id=current_user.id,
+        action="UPDATE",
+        resource="USER",
+        message=f"Usuário atualizado: {db_user.name} ({db_user.email})"
+    )
+
+    logger.info(f"Usuário atualizado com sucesso: {db_user.name}")
     return db_user
 
 @router.delete("/{user_id}", response_model=UserOut)
@@ -65,4 +99,3 @@ def delete_user(user_id: int, db: Session = Depends(get_db), current_user = Depe
     db.commit()
     return user
 
-#TODO realizar o crud de usuários, incluindo a atualização e exclusão de usuários.
