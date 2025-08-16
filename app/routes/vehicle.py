@@ -38,5 +38,4 @@ def delete_vehicle(vehicle_id: int, db: Session = Depends(get_db), current_user 
     db.delete(vehicle)
     db.commit()
     return vehicle
-
 #TODO implementar a atualização e exclusão de veículos, além de outras funcionalidades necessárias.
