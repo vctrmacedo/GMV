@@ -16,7 +16,7 @@ class Schedule(Base):
     km_final = Column(Integer)
     liters_fuel = Column(Float)
     fuel_cost = Column(Float)
-    observations = Column(Text, length=500)
+    observations = Column(Text)
 
     driver = relationship("Driver")
     vehicle = relationship("Vehicle")

@@ -15,4 +15,4 @@ class DriverOut(DriverBase):
     id: int
     active: bool
     class Config:
-        orm_mode = True
+        from_attributes = True

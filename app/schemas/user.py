@@ -1,5 +1,4 @@
 from pydantic import BaseModel, EmailStr
-from pydantic import BaseModel, EmailStr
 
 class UserBase(BaseModel):
     name: str
@@ -12,4 +11,4 @@ class UserOut(UserBase):
     id: int
     active: bool
     class Config:
-        orm_mode = True
+        from_attributes = True

@@ -22,4 +22,4 @@ class ScheduleOut(ScheduleBase):
     id: int
     user: int
     class Config:
-        orm_mode = True
+        from_attributes = True
