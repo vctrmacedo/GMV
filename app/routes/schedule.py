@@ -9,7 +9,7 @@ router = APIRouter(prefix="/schedules", tags=["Schedules"])
 
 @router.post("/", response_model=ScheduleOut)
 def create_schedule(schedule: ScheduleCreate, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
-    db_schedule = Schedule(**schedule.dict(), gestor_id=current_user.id)
+    db_schedule = Schedule(**schedule.dict(), user_id=current_user.id)
     db.add(db_schedule)
     db.commit()
     db.refresh(db_schedule)

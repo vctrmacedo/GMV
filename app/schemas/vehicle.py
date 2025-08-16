@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 class VehicleBase(BaseModel):
     license_plate: str
-    modelo: str
+    model: str
     year: int
     current_mileage: int = 0
 

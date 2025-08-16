@@ -9,7 +9,7 @@ class ScheduleBase(BaseModel):
     return_date: date
     origin: str
     destination: str
-    km_inicial: Optional[int] = 0
+    km_initial: Optional[int] = 0
     km_final: Optional[int] = 0
     liters_fuel: Optional[float] = 0
     fuel_cost: Optional[float] = 0
@@ -20,6 +20,6 @@ class ScheduleCreate(ScheduleBase):
 
 class ScheduleOut(ScheduleBase):
     id: int
-    user: int
+    user_id: int
     class Config:
         from_attributes = True
