@@ -29,4 +29,14 @@ def update_vehicle(vehicle_id: int, vehicle: VehicleCreate, db: Session = Depend
     db.commit()
     db.refresh(db_vehicle)
     return db_vehicle
+
+@router.delete("/{vehicle_id}", response_model=VehicleOut)
+def delete_vehicle(vehicle_id: int, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    vehicle = db.query(Vehicle).filter(Vehicle.id == vehicle_id).first()
+    if not vehicle:
+        raise HTTPException(status_code=404, detail="Veículo não encontrado")
+    db.delete(vehicle)
+    db.commit()
+    return vehicle
+
 #TODO implementar a atualização e exclusão de veículos, além de outras funcionalidades necessárias.
