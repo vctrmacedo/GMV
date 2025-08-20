@@ -6,7 +6,7 @@ class VehicleBase(BaseModel):
     model: str
     year: int
     current_mileage: int = 0
-    active: bool = True  # Define como booleano desde o início
+    active: bool = True  
 
 # Para criação
 class VehicleCreate(VehicleBase):
